@@ -1,21 +1,22 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import GeneralPage from './general';
-import ActitivitiesPage from './activities';
-import { Animated, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import ResourcePage from './resource';
-import NoticePage from './notice';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useGlobalSearchParams, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
+import { Animated, TouchableOpacity, View } from 'react-native';
+import ActitivitiesPage from './activities';
+import GeneralPage from './general';
+import NoticePage from './notice';
+import ResourcePage from './resource';
 
 const Tab = createMaterialTopTabNavigator();
 
 export default function Layout() {
     const navigation = useNavigation();
-    const params = useLocalSearchParams();
+    const params = useGlobalSearchParams();
 
     useEffect(() => {
-        navigation.setOptions({ title: params.display_name });
+        if (params.display_name) {
+            navigation.setOptions({ title: params.display_name });
+        }
     }, [params]);
 
     return (
@@ -89,6 +90,7 @@ function MyTabBar({ state, descriptors, navigation, position }) {
                 return (
                     <TouchableOpacity
                         key={label}
+                        activeOpacity={0.5}
                         accessibilityRole="button"
                         accessibilityState={isFocused ? { selected: true } : {}}
                         accessibilityLabel={options.tabBarAccessibilityLabel}
