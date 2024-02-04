@@ -5,6 +5,7 @@ import NativeButton from '../../../src/components/NativeButton/NativeButton';
 import CourseAlert from '../../../src/components/CourseAlert/CourseAlert';
 import moment from 'moment';
 import { Spinner } from '@gluestack-ui/themed';
+import CourseContentAccordion from '../../../src/components/Accordion/CourseContentAccordion';
 
 type Props = {
     id: number;
@@ -14,8 +15,6 @@ export default function GeneralPage({ id }: Props) {
     const { data, loading, error } = useGeneralDetailCourseQuery({
         variables: { id },
     });
-
-    console.log({ data });
 
     const hasDeadline = data?.course.events.some(
         (event) =>
@@ -36,8 +35,6 @@ export default function GeneralPage({ id }: Props) {
         Infinity,
     );
 
-    console.log(data);
-
     return (
         <ScrollView className="flex-1 bg-white">
             <View className=" py-5 flex flex-col gap-4">
@@ -48,7 +45,7 @@ export default function GeneralPage({ id }: Props) {
                 ) : (
                     <>
                         <CourseAlert
-                            className=" mx-4 mb-6"
+                            className=" mx-4 mb-4"
                             hasDeadline={hasDeadline}
                             mostRecentDeadline={mostRecentDeadline}
                         />
@@ -64,6 +61,22 @@ export default function GeneralPage({ id }: Props) {
                                 </View>
                             </NativeButton>
                         ))}
+                        <Text className=" mx-4 mt-4 font-bold text-lg">
+                            Course resource
+                        </Text>
+                        <View className=" mx-4 mt-2 flex flex-col gap-4">
+                            {data?.course.contentSections.map(
+                                ({ name, courseModules }) => (
+                                    <CourseContentAccordion
+                                        key={name}
+                                        value={{
+                                            name,
+                                            contents: courseModules,
+                                        }}
+                                    />
+                                ),
+                            )}
+                        </View>
                     </>
                 )}
             </View>

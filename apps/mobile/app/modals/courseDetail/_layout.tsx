@@ -33,9 +33,21 @@ export default function Layout() {
                         <GeneralPage id={parseInt(params.id.toString(), 10)} />
                     )}
                 />
-                <Tab.Screen name="Activities" component={ActitivitiesPage} />
+                <Tab.Screen
+                    name="Activities"
+                    children={() => (
+                        <ActitivitiesPage
+                            id={parseInt(params.id.toString(), 10)}
+                        />
+                    )}
+                />
                 <Tab.Screen name="Notice" component={NoticePage} />
-                <Tab.Screen name="Resource" component={ResourcePage} />
+                <Tab.Screen
+                    name="Resource"
+                    children={() => (
+                        <ResourcePage id={parseInt(params.id.toString(), 10)} />
+                    )}
+                />
             </Tab.Navigator>
         </View>
     );

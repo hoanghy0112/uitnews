@@ -5,6 +5,7 @@ import {
     JoinColumn,
     ManyToOne,
     OneToMany,
+    PrimaryColumn,
     Relation,
 } from 'typeorm';
 import type { CourseContentEntity } from './course-content.entity';
@@ -14,11 +15,16 @@ import type { CourseSectionEntity } from './course-section.entity';
 @Entity()
 export class CourseModuleEntity {
     @Field(() => Int)
+    @PrimaryColumn()
     id: number;
 
     @Field(() => String)
     @Column()
     name: string; //name of course of module
+
+    @Field(() => String, { nullable: true })
+    @Column({ nullable: true })
+    description: string; //name of course of module
 
     @Field(() => String)
     @Column()
@@ -128,13 +134,21 @@ export class CourseModuleEntity {
     @Column({ nullable: true })
     onclick: string;
 
+    @Field(() => Int, { nullable: true })
+    @Column({ nullable: true })
+    assignOpenedDate: number;
+
+    @Field(() => Int, { nullable: true })
+    @Column({ nullable: true })
+    assignDueDate: number;
+
     // @Field(() => String, { nullable: true })
     // @Column({ nullable: true })
     // activitybadge: string;
 
-    @Field(() => [String], { nullable: true })
-    @Column('simple-array', { nullable: true })
-    dates: string[];
+    // @Field(() => [String], { nullable: true })
+    // @Column('simple-array', { nullable: true })
+    dates: { timestamp: number }[];
 
     @Field(() => String, { nullable: true })
     @Column({ nullable: true })

@@ -18,10 +18,42 @@ query GeneralDetailCourse($id: Int!) {
         events {
             activityname
             description
+            id
+            modulename
             name
             overdue
             purpose
             timestart
+        }
+        contentSections {
+            name
+            section
+            summary
+            id
+            courseModules {
+                downloadcontent
+                id
+                modicon
+                modname
+                modplural
+                name
+                url
+                assignOpenedDate
+                assignDueDate
+                courseContents {
+                    author
+                    filename
+                    filepath
+                    filesize
+                    fileurl
+                    id
+                    sortorder
+                    timecreated
+                    timemodified
+                    type
+                    userid
+                }
+            }
         }
     }
 }
