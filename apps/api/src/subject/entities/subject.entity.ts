@@ -9,7 +9,7 @@ export class Subject {
     code: string;
 
     @Field(() => String)
-    @Column()
+    @Column({ nullable: true })
     nameVN: string;
 
     @Field(() => String)
@@ -30,7 +30,7 @@ export class Subject {
 
     @Field(() => String, { nullable: true })
     @Column()
-    oldeCode: string;
+    oldCode: string;
 
     @Field(() => String, { nullable: true })
     @Column()
@@ -52,20 +52,7 @@ export class Subject {
     @Column()
     practicalCredit: number;
 
-    constructor(data: any) {
-        if (!data) return;
-        this.code = data.code;
-        this.nameVN = data.nameVN;
-        this.nameEN = data.nameEN;
-        this.isActive = data.isActive;
-        this.department = data.department;
-        this.type = data.type;
-        this.oldeCode = data.oldCode;
-        this.equivalentCode = data.equivalentCode;
-        this.requiredCode = data.requiredCode;
-        this.previousCode = data.previousCode;
-        this.theoreticalCredit = data.theoreticalCredit;
-        this.practicalCredit = data.practicalCredit;
-    }
+    @Field(() => String, { nullable: true }) // Graphql
+    @Column({ nullable: true })
+    summary: string;
 }
-
