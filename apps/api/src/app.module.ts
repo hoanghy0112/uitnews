@@ -30,15 +30,24 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
     imports: [
-        GraphQLModule.forRoot<ApolloDriverConfig>({
+        GraphQLModule.forRootAsync<ApolloDriverConfig>({
+            imports: [ConfigModule],
+            inject: [ConfigService],
             driver: ApolloDriver,
-            autoSchemaFile: join(process.cwd(), '/schema.gql'),
-            playground: true,
-            sortSchema: true,
-            formatError: (error) => ({
-                message: error.message,
-                ...error.extensions,
-                path: error.path,
+            useFactory: async (configService: ConfigService) => ({
+                autoSchemaFile: join(
+                    configService.get<string>('ENVIRONMENT') === 'development'
+                        ? process.cwd()
+                        : '/tmp',
+                    '/schema.gql',
+                ),
+                playground: true,
+                sortSchema: true,
+                formatError: (error) => ({
+                    message: error.message,
+                    ...error.extensions,
+                    path: error.path,
+                }),
             }),
         }),
         ConfigModule.forRoot({
@@ -54,30 +63,33 @@ import { MongooseModule } from '@nestjs/mongoose';
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
-            useFactory: (configService: ConfigService) => ({
-                type: 'postgres' as 'postgres',
-                host: configService.get<string>('MAIN_DB_HOST'),
-                port: parseInt(configService.get<string>('MAIN_DB_PORT')),
-                username: configService.get<string>('MAIN_DB_USERNAME'),
-                password: configService.get<string>('MAIN_DB_PASSWORD'),
-                database: configService.get<string>('MAIN_DB_NAME'),
-                synchronize:
-                    configService.get<EnvironmentType>('ENVIRONMENT') ==
-                    'development',
-                autoLoadEntities: true,
-                ssl:
-                    configService.get<EnvironmentType>('ENVIRONMENT') ===
-                    'production',
-                extra:
-                    configService.get<EnvironmentType>('ENVIRONMENT') ===
-                    'production'
-                        ? {
-                              ssl: {
-                                  rejectUnauthorized: false,
-                              },
-                          }
-                        : undefined,
-            }),
+            useFactory: (configService: ConfigService) => {
+                console.log(configService.get('LOGGER_DB_CONNECTION_URI'));
+                return {
+                    type: 'postgres' as 'postgres',
+                    host: configService.get<string>('MAIN_DB_HOST'),
+                    port: parseInt(configService.get<string>('MAIN_DB_PORT')),
+                    username: configService.get<string>('MAIN_DB_USERNAME'),
+                    password: configService.get<string>('MAIN_DB_PASSWORD'),
+                    database: configService.get<string>('MAIN_DB_NAME'),
+                    synchronize:
+                        configService.get<EnvironmentType>('ENVIRONMENT') ==
+                        'development',
+                    autoLoadEntities: true,
+                    ssl:
+                        configService.get<EnvironmentType>('ENVIRONMENT') ===
+                        'production',
+                    extra:
+                        configService.get<EnvironmentType>('ENVIRONMENT') ===
+                        'production'
+                            ? {
+                                  ssl: {
+                                      rejectUnauthorized: false,
+                                  },
+                              }
+                            : undefined,
+                };
+            },
         }),
         WinstonModule.forRootAsync({
             imports: [
