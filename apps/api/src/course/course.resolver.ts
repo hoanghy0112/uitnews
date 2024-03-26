@@ -8,6 +8,7 @@ import { Course } from './entities/course.entity';
 import { CourseContentEntity } from './entities/course-content.entity';
 import { QueryArgs } from '@/common/args/query.arg';
 import { CourseApiService } from './services/course-api.service';
+import moment from 'moment';
 
 @Resolver(() => Course)
 export class CourseResolver {
@@ -18,19 +19,30 @@ export class CourseResolver {
 
     @Query(() => [Course])
     @UseGuards(JwtAuthGuard)
-    async findAllCoursesOfUser(
-        @CurrentUser() user: User,
-        @Args() queryArgs: QueryArgs,
-    ) {
+    async userCourses(@CurrentUser() user: User, @Args() queryArgs: QueryArgs) {
         if (queryArgs.isNew) {
-            const courses = (
+            const apiCourses = (
                 await this.courseApiService.findAllCoursesOfUser(user)
             ).map((course) => ({ ...course, users: [user] }));
-            await this.courseService.save(courses);
-            return courses;
-        } else {
-            return this.courseService.findAllCoursesOfUser(user);
+            await this.courseService.save(apiCourses);
         }
+
+        const courses = await this.courseService.findAllCoursesOfUser(
+            user,
+            queryArgs.keyword,
+        );
+
+        if (queryArgs.isRecent) {
+            return courses.filter(
+                ({ startdate }) =>
+                    moment().diff(
+                        moment(new Date(startdate * 1000)),
+                        'months',
+                        true,
+                    ) < 5,
+            );
+        }
+        return courses;
     }
 
     @Query(() => [CourseContentEntity])

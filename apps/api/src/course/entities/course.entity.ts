@@ -23,6 +23,10 @@ export class Course {
 
     @Field(() => String, { nullable: true })
     @Column({ nullable: true })
+    display_name: string;
+
+    @Field(() => String, { nullable: true })
+    @Column({ nullable: true })
     shortname: string;
 
     @Field(() => String, { nullable: true })
@@ -108,6 +112,10 @@ export class Course {
     @Field(() => Boolean, { nullable: true })
     @Column({ nullable: true })
     uservisible: boolean;
+
+    @Field({ nullable: true })
+    @Column({ nullable: true })
+    coursecategory: string;
 
     @OneToMany('CourseContentEntity', 'courseid')
     contents: Relation<CourseContentEntity>[];
