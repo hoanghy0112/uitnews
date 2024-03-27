@@ -28,8 +28,18 @@ export class CourseService {
                 { userId: user.id },
             )
             .where(
-                `to_tsquery('${keyword.split(' ').join(' & ')}') @@ to_tsvector(unaccent(course.fullname))`,
+                keyword
+                    ? `to_tsquery('${keyword.split(' ').join(' & ')}') @@ to_tsvector(unaccent(course.fullname))`
+                    : 'true',
+                { keyword },
             )
+            .orWhere(
+                keyword
+                    ? `unaccent(course.fullname) ilike ('%' || unaccent(:keyword) || '%')`
+                    : 'true',
+                { keyword },
+            )
+            .orderBy('course.startdate', 'DESC')
             .getMany();
         return response;
     }
