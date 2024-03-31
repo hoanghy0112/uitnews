@@ -7,8 +7,6 @@ import CourseIcon from '../../src/icons/course';
 import ScheduleIcon from '../../src/icons/schedule';
 import ProfileIcon from '../../src/icons/profile';
 import LearningPathIcon from '../../src/icons/learning-path';
-// import HomeIcon from '../../assets/icons/home.png';
-// import { Image } from 'expo-image';
 
 export default function TabLayout() {
     return (
@@ -19,7 +17,7 @@ export default function TabLayout() {
                 tabBarShowLabel: false,
                 tabBarStyle: {
                     height: 80,
-                    backgroundColor: '#ffffff99',
+                    backgroundColor: '#ffffffbb',
                     borderTopWidth: 0,
                     position: 'absolute',
                     width: 'auto',
@@ -39,7 +37,7 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="courses"
+                name="courses/index"
                 options={{
                     title: 'Courses',
                     tabBarIcon: ({ focused }) => (

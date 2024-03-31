@@ -1,5 +1,7 @@
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import { Text, TouchableNativeFeedback, View } from 'react-native';
+import { Course } from '../../gql/graphql';
 
 export default function CourseItem({
     fullname,
@@ -7,9 +9,25 @@ export default function CourseItem({
     idnumber,
     shortname,
     courseimage,
-}: CourseEntity) {
+    id,
+}: Pick<
+    Course,
+    | 'fullname'
+    | 'display_name'
+    | 'idnumber'
+    | 'shortname'
+    | 'courseimage'
+    | 'id'
+>) {
     return (
-        <TouchableNativeFeedback>
+        <TouchableNativeFeedback
+            onPress={() => {
+                router.push({
+                    pathname: `/modals/courseDetail`,
+                    params: { display_name, shortname, id },
+                });
+            }}
+        >
             <View className=" mx-4 border-[0.5px] rounded-2xl p-4 flex flex-row gap-4">
                 <Image
                     style={{
