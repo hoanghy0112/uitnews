@@ -1,9 +1,10 @@
-import React, { ReactNode } from 'react';
+import { router } from 'expo-router';
+import React from 'react';
 import {
-    Pressable,
     StyleSheet,
     Text,
     TouchableNativeFeedback,
+    useWindowDimensions,
     View,
 } from 'react-native';
 import Animated, {
@@ -15,20 +16,25 @@ import Animated, {
     useSharedValue,
     withTiming,
 } from 'react-native-reanimated';
-import Chevron from './Chevron';
-import ResourceIcon from '../../icons/resource';
+import RenderHtml from 'react-native-render-html';
+import AssignIcon from '../../icons/assign';
 import FolderIcon from '../../icons/folder';
 import ForumIcon from '../../icons/forum';
-import AssignIcon from '../../icons/assign';
+import ResourceIcon from '../../icons/resource';
+import Chevron from './Chevron';
 
 type Props = {
     value: {
         name: string;
-        contents: { modname: string; name: string }[];
+        summary?: string;
+        course_id: number;
+        contents: { id: number; modname: string; name: string }[];
     };
 };
 
 const CourseContentAccordion = ({ value }: Props) => {
+    const { width } = useWindowDimensions();
+
     const listRef = useAnimatedRef();
     const heightValue = useSharedValue(0);
     const open = useSharedValue(false);
@@ -57,16 +63,45 @@ const CourseContentAccordion = ({ value }: Props) => {
                     open.value = !open.value;
                 }}
             >
-                <View style={styles.titleContainer}>
-                    <Text className=" font-semibold text-lg">{value.name}</Text>
-                    <Chevron progress={progress} />
+                <View className=" w-full p-4 flex-row justify-between items-center">
+                    <Text className=" flex-1 font-semibold text-lg mr-2">
+                        {value.name}
+                    </Text>
+                    {value.contents.length > 0 || value.summary ? (
+                        <Chevron progress={progress} />
+                    ) : null}
                 </View>
             </TouchableNativeFeedback>
             <Animated.View style={heightAnimationStyle}>
                 <Animated.View style={styles.contentContainer} ref={listRef}>
-                    {value.contents.map(({ name, modname }, i) => {
+                    <View className=" px-4">
+                        <RenderHtml
+                            contentWidth={width - 50}
+                            baseStyle={{
+                                padding: 0,
+                                margin: 0,
+                            }}
+                            source={{ html: value.summary }}
+                        />
+                    </View>
+                    {value.contents.map(({ name, modname, id }, i) => {
                         return (
-                            <TouchableNativeFeedback key={i}>
+                            <TouchableNativeFeedback
+                                key={i}
+                                onPress={() => {
+                                    if (modname === 'assign') {
+                                        router.push({
+                                            pathname: '/modals/detail-activity',
+                                            params: {
+                                                id,
+                                                assignment_id: id,
+                                                course_id:
+                                                    value.course_id || '',
+                                            },
+                                        });
+                                    }
+                                }}
+                            >
                                 <View className=" w-full flex flex-row gap-4 items-center px-3 py-4 border-t-[0.2px] border-t-neutral-60">
                                     {modname === 'resource' ? (
                                         <ResourceIcon />
@@ -97,12 +132,6 @@ const CourseContentAccordion = ({ value }: Props) => {
 export default CourseContentAccordion;
 
 const styles = StyleSheet.create({
-    titleContainer: {
-        padding: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
     contentContainer: {
         position: 'absolute',
         width: '100%',

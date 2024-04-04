@@ -102,6 +102,19 @@ export default function Layout() {
                                 headerTitleStyle: { fontSize: 16 },
                             }}
                         />
+                        <Stack.Screen
+                            name="modals/detail-activity"
+                            options={{
+                                title: 'Activity',
+                                presentation: 'modal',
+                                animation: 'fade_from_bottom',
+                                headerShadowVisible: false,
+                                headerStyle: { backgroundColor: 'white' },
+                                headerTintColor: 'black',
+                                headerTitleStyle: { fontSize: 16 },
+                                headerTitleAlign: 'center',
+                            }}
+                        />
                     </Stack>
                 </ThemeProvider>
             </ApolloProvider>
