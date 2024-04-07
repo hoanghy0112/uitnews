@@ -3,8 +3,9 @@ import {
     GoogleSigninButton,
     statusCodes,
 } from '@react-native-google-signin/google-signin';
-import React from 'react';
-import { View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Text, View } from 'react-native';
+import NativeButton from '../../src/components/NativeButton/NativeButton';
 
 export default function GoogleIntegration() {
     GoogleSignin.configure({
@@ -16,8 +17,14 @@ export default function GoogleIntegration() {
             'https://www.googleapis.com/auth/calendar',
         ],
         offlineAccess: true,
-        hostedDomain: '',
     });
+
+    useEffect(() => {
+        (async () => {
+            const isSignedIn = await GoogleSignin.isSignedIn();
+            console.log({ isSignedIn });
+        })();
+    }, []);
 
     async function signIn() {
         try {
@@ -26,7 +33,7 @@ export default function GoogleIntegration() {
             const token = await GoogleSignin.getTokens();
             console.log({ userInfo, token });
         } catch (error) {
-            console.log({ error });
+            console.log({ error, statusCodes });
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
                 // user cancelled the login flow
             } else if (error.code === statusCodes.IN_PROGRESS) {
@@ -46,6 +53,18 @@ export default function GoogleIntegration() {
                 color={GoogleSigninButton.Color.Light}
                 onPress={signIn}
             />
+            <NativeButton
+                className=" mt-5"
+                onPress={async () => {
+                    await GoogleSignin.signOut();
+                }}
+            >
+                <View className=" p-4 px-10 bg-primary-90 ">
+                    <Text className="color-primary-50 font-medium">
+                        Sign out
+                    </Text>
+                </View>
+            </NativeButton>
         </View>
     );
 }
