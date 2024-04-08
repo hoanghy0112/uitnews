@@ -2,7 +2,7 @@ import { CalendarNotFoundException } from '@/calendar/errors/not-found.error';
 import { Injectable } from '@nestjs/common';
 import WS_FUNCTION from 'src/common/constants/function-name';
 import { EventEntity } from 'src/event/entities/event.entity';
-import { ApiService } from '../../api/api.service';
+import { ApiService } from '../../api/services/api.service';
 import { CourseApiService } from '@/course/services/course-api.service';
 
 @Injectable()
@@ -46,11 +46,11 @@ export class EventApiService {
 
     async getEventList({
         token,
-        isComing,
+        isComing = true,
     }: {
         token: string;
-        isComing: boolean;
-    }) {
+        isComing?: boolean;
+    }): Promise<EventEntity[]> {
         const courses = await this.courseApiService.findAllCoursesOfUser({
             token,
         });
@@ -71,7 +71,7 @@ export class EventApiService {
             throw new CalendarNotFoundException();
         }
 
-        const eventList = [];
+        const eventList: EventEntity[] = [];
         response.groupedbycourse.forEach(({ events }) =>
             eventList.push(...events),
         );

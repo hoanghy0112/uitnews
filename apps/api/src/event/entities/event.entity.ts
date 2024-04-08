@@ -1,6 +1,15 @@
 import type { Course } from '@/course/entities/course.entity';
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, Int32, PrimaryColumn, Relation } from 'typeorm';
+import {
+    Column,
+    Entity,
+    Int32,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryColumn,
+    Relation,
+} from 'typeorm';
 import type { EventReminder } from './event-reminder.entity';
 
 @ObjectType()
@@ -67,19 +76,19 @@ export class EventEntity {
     eventtype: string;
 
     @Field(() => Int, { nullable: true })
-    @Column(() => Int32)
+    @Column()
     timestart: number;
 
     @Field(() => Int, { nullable: true })
-    @Column(() => Int32)
+    @Column()
     timeduration: number;
 
     @Field(() => Int, { nullable: true })
-    @Column(() => Int32)
+    @Column()
     timesort: number;
 
     @Field(() => Int, { nullable: true })
-    @Column(() => Int32)
+    @Column()
     timeusermidnight: number;
 
     @Field(() => Int, { nullable: true })
@@ -166,7 +175,10 @@ export class EventEntity {
     @Column({ nullable: true })
     groupname: string;
 
+    @ManyToOne('Course')
+    @JoinColumn({ name: 'course_id' })
     course: Relation<Course>;
 
+    @OneToMany('EventReminder', 'event')
     reminders: Relation<EventReminder[]>;
 }

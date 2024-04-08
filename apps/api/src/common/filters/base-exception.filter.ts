@@ -11,9 +11,18 @@ export class BaseExceptionFilter implements GqlExceptionFilter {
     catch(exception: BaseException, host: ArgumentsHost) {
         const gqlHost = GqlArgumentsHost.create(host);
         gqlHost.getContext().res;
-        this.loggerService.error(exception.code, exception.code, exception);
+        const filteredException = JSON.parse(
+            JSON.stringify(exception, (key, val) =>
+                key.includes('.') ? undefined : val,
+            ),
+        );
+        this.loggerService.error(
+            exception.code,
+            exception.code,
+            filteredException,
+        );
         throw new GraphQLError(exception.message, {
-            extensions: { ...exception },
+            extensions: filteredException,
         });
     }
 }
