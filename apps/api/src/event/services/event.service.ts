@@ -35,6 +35,7 @@ export class EventService {
                       course: { users: { id: userId } },
                   }
                 : { course: { users: { id: userId } } },
+            order: { timestart: 'ASC' },
             relations: { course: withCourse },
         });
     }

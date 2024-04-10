@@ -13,6 +13,8 @@ import { useDebounceValue } from 'usehooks-ts';
 import CourseSearchResultItem from '../../src/components/CourseSearchResultItem/CourseSearchResultItem';
 import TextField from '../../src/components/TextField/TextField';
 import { useSearchCoursesQuery } from '../../src/gql/graphql';
+import CourseSearchListSkeleton from '../../src/skeletons/CourseSearchListSkeleton';
+import Animated, { FadeInLeft, FadeOutLeft } from 'react-native-reanimated';
 
 export default function Modal() {
     const [text, setText] = useState('');
@@ -50,13 +52,18 @@ export default function Modal() {
                 <View className=" flex-1 mt-4">
                     <ScrollView className=" flex-1">
                         {loading ? (
-                            <Spinner size="large" />
+                            <CourseSearchListSkeleton />
                         ) : (
-                            data?.userCourses.map((course) => (
-                                <CourseSearchResultItem
+                            data?.userCourses.map((course, index) => (
+                                <Animated.View
                                     key={course.id}
-                                    {...course}
-                                />
+                                    entering={FadeInLeft.delay(
+                                        (index + 1) * 100,
+                                    )}
+                                    exiting={FadeOutLeft}
+                                >
+                                    <CourseSearchResultItem {...course} />
+                                </Animated.View>
                             ))
                         )}
                     </ScrollView>
