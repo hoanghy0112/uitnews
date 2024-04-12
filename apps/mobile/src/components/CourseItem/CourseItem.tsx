@@ -6,6 +6,7 @@ import { useDeadline } from '../../hooks/course/useDeadline';
 import DeadlineSkeleton from '../../skeletons/DeadlineSkeleton';
 import HAS_DEADLINE_ICON from '../../../assets/small-has-deadline-icon.png';
 import REST_TIME_RIGHT from '../../../assets/rest-time-right.png';
+import { useRecentCourse } from '../../stores/recent-course.store';
 
 export default function CourseItem({
     fullname,
@@ -17,9 +18,12 @@ export default function CourseItem({
 }: Partial<Course>) {
     const { hasDeadline, mostRecentActivity, loading } = useDeadline(id);
 
+    const { addRecentCourse } = useRecentCourse();
+
     return (
         <TouchableNativeFeedback
             onPress={() => {
+                addRecentCourse({ display_name, shortname, id });
                 router.push({
                     pathname: `/modals/courseDetail`,
                     params: { display_name, shortname, id },

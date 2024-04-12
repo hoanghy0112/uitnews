@@ -18,8 +18,9 @@ import { Platform, useColorScheme } from 'react-native';
 import '../global.css';
 import { GluestackUIProvider } from '../src/components/gluestack-ui-provider/';
 import { useApolloLink } from '../src/utils/auth';
-// import { persistCache, AsyncStorageWrapper } from 'apollo3-cache-persist';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { persistCache, AsyncStorageWrapper } from 'apollo3-cache-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const unstable_settings = {
     initialRouteName: '(tabs)',
@@ -96,13 +97,27 @@ export default function Layout() {
     const responseListener = useRef(null);
 
     useEffect(() => {
+        GoogleSignin.configure({
+            webClientId:
+                '683520066916-c8afnsf4lstvc2dnt43qgusqm2olmiko.apps.googleusercontent.com',
+            scopes: [
+                'profile',
+                'email',
+                'https://www.googleapis.com/auth/calendar',
+                'https://www.googleapis.com/auth/tasks',
+            ],
+            offlineAccess: true,
+        });
+    }, []);
+
+    useEffect(() => {
         async function init() {
             const cache = new InMemoryCache();
 
-            // await persistCache({
-            //     cache,
-            //     storage: new AsyncStorageWrapper(AsyncStorage),
-            // });
+            await persistCache({
+                cache,
+                storage: new AsyncStorageWrapper(AsyncStorage),
+            });
 
             setClient(new ApolloClient({ link, cache }));
         }
@@ -120,8 +135,15 @@ export default function Layout() {
                 }),
             });
 
-            const token = (await Notifications.getExpoPushTokenAsync()).data;
-            console.log({ token });
+            try {
+                const token = (await Notifications.getExpoPushTokenAsync())
+                    .data;
+                const token2 = (await Notifications.getDevicePushTokenAsync())
+                    .data;
+                console.log({ token, token2 });
+            } catch (error) {
+                console.log({ error });
+            }
         })();
 
         registerForPushNotificationsAsync().then((token) => {

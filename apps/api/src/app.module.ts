@@ -15,19 +15,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { CommonModule } from './common/common.module';
 import { BaseExceptionFilter } from './common/filters/base-exception.filter';
+import { DateScalar } from './common/scalars/date.scalar';
 import { ShutdownService } from './common/services/shutdown.service';
 import { EnvironmentType } from './config/type';
 import { CourseModule } from './course/course.module';
 import { EventModule } from './event/event.module';
+import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
 import { HealthModule } from './health/health.module';
 import { LecturerModule } from './lecturer/lecturer.module';
 import { LoggerModule } from './logger/logger.module';
+import { MakeUpClassModule } from './make-up-class/make-up-class.module';
+import { NoteModule } from './note/note.module';
 import { SubjectModule } from './subject/subject.module';
 import { UserModule } from './user/user.module';
-import { DateScalar } from './common/scalars/date.scalar';
-import { CommonModule } from './common/common.module';
-import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
 
 @Module({
     imports: [
@@ -173,6 +175,8 @@ import { GoogleCalendarModule } from './google-calendar/google-calendar.module';
         LecturerModule,
         CommonModule,
         GoogleCalendarModule,
+        MakeUpClassModule,
+        NoteModule,
     ],
     controllers: [AppController],
     providers: [
