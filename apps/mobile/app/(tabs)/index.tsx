@@ -10,6 +10,7 @@ import PageHeader from '../../src/components/PageHeader/PageHeader';
 import RemainingActivities from '../../src/components/RemainingActivities';
 import SyncCalendar from '../../src/components/SyncCalendar';
 import { useAuth } from '../../src/stores/auth.store';
+import PreviewMakeupClass from '../../src/components/PreviewMakeupClass';
 
 export default function Page() {
     const { isLogin, authLogout } = useAuth();
@@ -26,14 +27,15 @@ export default function Page() {
         <View className=" flex-1 bg-white">
             <SafeAreaView>
                 <PageHeader />
-                <ScrollView>
-                    <View className=" flex flex-col gap-10 pb-[100px]">
-                        <CourseSearch />
-                        <NewFeatures />
-                        <View className=" flex flex-col gap-2">
-                            <RemainingActivities />
-                            <SyncCalendar />
-                        </View>
+                <ScrollView className=" flex flex-col gap-10 pb-[100px]">
+                    <CourseSearch />
+                    <NewFeatures />
+                    <View className=" flex flex-col gap-2">
+                        <PreviewMakeupClass />
+                    </View>
+                    <View className=" mt-10 flex flex-col gap-2">
+                        <RemainingActivities />
+                        <SyncCalendar />
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -43,7 +45,7 @@ export default function Page() {
 
 function NewFeatures() {
     return (
-        <View className=" mt-0">
+        <View className=" mt-10">
             <Text className=" mx-4 text-base font-semibold">What's new?</Text>
             <TouchableOpacity
                 activeOpacity={0.5}

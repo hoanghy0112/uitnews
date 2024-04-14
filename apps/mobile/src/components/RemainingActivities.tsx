@@ -1,52 +1,29 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Text, TouchableNativeFeedback, View } from 'react-native';
 import Animated, { FadeInLeft, FadeOutLeft } from 'react-native-reanimated';
 import EMPTY_REMAINING_ACTIVITIES from '../../assets/empty-remaining-activities.png';
 import REFRESH_ICON from '../../assets/white-refresh.png';
-import { useUserEventsLazyQuery } from '../gql/graphql';
-import { useSyncEvent } from '../hooks/events/useSyncEvent';
+import { useEventList } from '../hooks/events/useEventList';
 import EventListSkeleton from '../skeletons/EventListSkeleton';
 import { timeDiff } from '../utils/timeDiff';
 import NativeButton from './NativeButton/NativeButton';
 
 export default function RemainingActivities() {
-    const [loading, setLoading] = useState(false);
-    const [refetch, { data, error }] = useUserEventsLazyQuery();
-    const { syncEvent } = useSyncEvent();
+    const { refetch, data, loading, error } = useEventList();
 
     useEffect(() => {
-        setLoading(true);
-        refetch({
-            variables: { isNew: true },
-            fetchPolicy: 'cache-first',
-            onCompleted(data) {
-                setLoading((prev) => false);
-            },
-        });
-        syncEvent();
+        refetch();
     }, []);
 
     return (
-        <View className=" flex-1 mt-0">
+        <View className=" flex mt-0">
             <View className=" mx-4 flex-row justify-between items-center">
                 <Text className=" text-base font-semibold">
                     Các bài tập sắp đến hạn
                 </Text>
-                <NativeButton
-                    onPress={() => {
-                        setLoading(true);
-                        refetch({
-                            variables: { isNew: true },
-                            fetchPolicy: 'no-cache',
-                            onCompleted(data) {
-                                setLoading((prev) => false);
-                            },
-                        });
-                        syncEvent();
-                    }}
-                >
+                <NativeButton onPress={refetch}>
                     <View className=" flex-row gap-2 p-2 px-3 bg-primary-70 ">
                         <Image
                             style={{ width: 20, height: 20 }}
@@ -58,7 +35,7 @@ export default function RemainingActivities() {
                     </View>
                 </NativeButton>
             </View>
-            <View className=" flex-1 py-5">
+            <View className=" flex py-5">
                 {loading ? (
                     <EventListSkeleton />
                 ) : (
@@ -68,7 +45,7 @@ export default function RemainingActivities() {
                                 key={id}
                                 entering={FadeInLeft.delay((i + 1) * 100)}
                                 exiting={FadeOutLeft}
-                                className=" flex-1"
+                                className=" flex"
                             >
                                 <TouchableNativeFeedback
                                     onPress={() => {
@@ -87,9 +64,9 @@ export default function RemainingActivities() {
                                 >
                                     <View
                                         style={{ borderColor: '#CFCFCF' }}
-                                        className=" flex-1 px-4 py-4 border-[0.5px]"
+                                        className=" flex px-4 py-4 border-[0.5px]"
                                     >
-                                        <View className="flex-1 flex flex-col justify-between items-start gap-4">
+                                        <View className=" flex flex-col justify-between items-start gap-4">
                                             <View className=" flex flex-row gap-2">
                                                 <Text
                                                     className={` px-3 py-1 flex justify-center items-center rounded-lg bg-primary-70 text-white text-center font-medium text-sm`}
