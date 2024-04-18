@@ -31,7 +31,6 @@ export class MakeUpClassResolver {
         })
         inComing: boolean,
     ) {
-        await this.makeUpClassApiService.fetchMakeupClass(1);
         return this.makeUpClassService.findAll({
             year,
             month,
@@ -42,11 +41,23 @@ export class MakeUpClassResolver {
     }
 
     @Mutation(() => Boolean)
-    async updateMakeupClass(
-        @Args('max_page', { type: () => Int, nullable: true, defaultValue: 50 })
-        maxPage: number,
+    async crawlMakeupClass(
+        @Args('startPage', {
+            nullable: true,
+            defaultValue: 0,
+            type: () => Int,
+            description: 'Default page to crawl data',
+        })
+        startPage: number,
+        @Args('pageNum', {
+            nullable: true,
+            defaultValue: 5,
+            type: () => Int,
+            description: 'Max page to crawl data, each page is 4 item',
+        })
+        pageNum: number,
     ) {
-        await this.makeUpClassApiService.fetchMakeupClass(maxPage);
+        await this.makeUpClassApiService.fetchMakeupClass(startPage, pageNum);
         return true;
     }
 }

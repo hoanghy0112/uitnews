@@ -86,16 +86,23 @@ import { NewsFeedModule } from './news-feed/news-feed.module';
                 username: configService.get<string>('MAIN_DB_USERNAME'),
                 password: configService.get<string>('MAIN_DB_PASSWORD'),
                 database: configService.get<string>('MAIN_DB_NAME'),
-                synchronize:
-                    configService.get<EnvironmentType>('ENVIRONMENT') ==
-                    'development',
+                // synchronize:
+                //     configService.get<EnvironmentType>('ENVIRONMENT') ==
+                //     'development',
+                synchronize: true,
                 autoLoadEntities: true,
-                ssl: true,
-                extra: {
-                    ssl: {
-                        rejectUnauthorized: false,
-                    },
-                },
+                ssl:
+                    configService.get<EnvironmentType>('ENVIRONMENT') ===
+                    'production',
+                extra:
+                    configService.get<EnvironmentType>('ENVIRONMENT') ===
+                    'production'
+                        ? {
+                              ssl: {
+                                  rejectUnauthorized: false,
+                              },
+                          }
+                        : undefined,
             }),
         }),
         WinstonModule.forRootAsync({
