@@ -13,29 +13,34 @@ import { useAuth } from '../../src/stores/auth.store';
 import PreviewMakeupClass from '../../src/components/PreviewMakeupClass';
 
 export default function Page() {
-    const { isLogin, authLogout } = useAuth();
+    const { isLogin } = useAuth();
 
     const rootNavigationState = useRootNavigationState();
 
     useEffect(() => {
         if (!isLogin && rootNavigationState?.key) {
-            router.replace('/login');
+            router.replace('/modals/login');
         }
     }, []);
 
     return (
         <View className=" flex-1 bg-white">
-            <SafeAreaView>
+            <SafeAreaView style={{ flex: 1 }}>
                 <PageHeader />
-                <ScrollView className=" flex flex-col gap-10 pb-[100px]">
-                    <CourseSearch />
-                    <NewFeatures />
-                    <View className=" flex flex-col gap-2">
-                        <PreviewMakeupClass />
-                    </View>
-                    <View className=" mt-10 flex flex-col gap-2">
-                        <RemainingActivities />
-                        <SyncCalendar />
+                <ScrollView
+                    style={{ flex: 1 }}
+                    className=" flex-1 flex-col gap-10"
+                >
+                    <View style={{ paddingBottom: 100 }}>
+                        <CourseSearch />
+                        <NewFeatures />
+                        <View className=" flex flex-col gap-2">
+                            <PreviewMakeupClass />
+                        </View>
+                        <View className=" mt-10 flex flex-col gap-2">
+                            <RemainingActivities />
+                            <SyncCalendar />
+                        </View>
                     </View>
                 </ScrollView>
             </SafeAreaView>
