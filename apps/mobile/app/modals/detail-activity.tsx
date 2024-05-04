@@ -1,23 +1,13 @@
 import { Spinner } from '@gluestack-ui/themed';
-import { useGlobalSearchParams } from 'expo-router';
+import { router, useGlobalSearchParams } from 'expo-router';
 import React from 'react';
-import {
-    Platform,
-    ScrollView,
-    Text,
-    useWindowDimensions,
-    View,
-} from 'react-native';
+import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import NativeButton from '../../src/components/NativeButton/NativeButton';
-import {
-    IntroFile,
-    useDetailAssignmentCourseQuery,
-} from '../../src/gql/graphql';
+import { useDetailAssignmentCourseQuery } from '../../src/gql/graphql';
+import { useViewFile } from '../../src/hooks/file/useViewFile';
 import AssignIcon from '../../src/icons/assign';
 import { useAuth } from '../../src/stores/auth.store';
-import * as FileSystem from 'expo-file-system';
-import * as IntentLauncher from 'expo-intent-launcher';
 
 export default function DetailActivity() {
     const { width } = useWindowDimensions();
@@ -28,6 +18,8 @@ export default function DetailActivity() {
         assignment_id: string;
     }>();
 
+    const viewFile = useViewFile();
+
     const { data, loading, error } = useDetailAssignmentCourseQuery({
         variables: {
             id: parseInt(params.course_id, 10),
@@ -37,54 +29,42 @@ export default function DetailActivity() {
 
     const assignment = data?.assignmentCourse?.assignment;
 
-    async function downloadFile(file: IntroFile) {
-        const downloadResumable = FileSystem.createDownloadResumable(
-            file.fileurl,
-            FileSystem.documentDirectory + file.fileurl.split('/').at(-1),
-            {},
-        );
-
-        try {
-            const { uri } = await downloadResumable.downloadAsync();
-
-            console.log('Finished downloading to ', uri);
-
-            FileSystem.getContentUriAsync(uri).then((cUri) => {
-                if (Platform.OS === 'ios') {
-                    // Sharing.shareAsync(cUri.uri);
-                } else {
-                    IntentLauncher.startActivityAsync(
-                        'android.intent.action.VIEW',
-                        {
-                            data: cUri,
-                            flags: 1,
-                            type: file.mimetype,
-                        },
-                    );
-                }
-            });
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
     return (
-        <View className=" flex-1 bg-white pt-10">
-            {loading && !assignment ? (
+        <View className=" flex-1 bg-white pt-4">
+            {loading || !assignment ? (
                 <Spinner />
             ) : (
                 <View className=" flex-1">
                     <ScrollView className=" flex-1">
-                        <View className=" flex-1 flex-col gap-6">
-                            <View className=" px-4 w-full flex-row gap-6">
-                                <View className=" pt-2">
-                                    <AssignIcon scale={1.5} />
+                        <NativeButton
+                            key={data.assignmentCourse.id}
+                            onPress={() => {
+                                router.push({
+                                    pathname: `/modals/courseDetail`,
+                                    params: { ...data.assignmentCourse },
+                                });
+                            }}
+                            className=" mx-4"
+                        >
+                            <View className=" bg-primary-95 flex flex-col gap-1 p-3 border-[0.5px] rounded-2xl border-neutral-80">
+                                <Text className=" text-primary-50">
+                                    {data.assignmentCourse.shortname}
+                                </Text>
+                                <Text className=" text-primary-50 font-medium">
+                                    {data.assignmentCourse.display_name}
+                                </Text>
+                            </View>
+                        </NativeButton>
+                        <View className=" mt-10 flex-1 flex-col gap-6">
+                            <View className=" px-4 w-full flex-row items-center gap-3">
+                                <View className=" pt-0">
+                                    <AssignIcon scale={1.2} />
                                 </View>
                                 <Text className=" flex-1 text-xl font-medium">
                                     {assignment.name}
                                 </Text>
                             </View>
-                            <View className=" flex-col gap-4 bg-neutral-99 p-4">
+                            <View className=" mt-4 flex-col gap-4 bg-neutral-99 p-4">
                                 <View className=" flex-row items-center gap-4">
                                     <Text className=" w-[80px] p-1 rounded-lg text-center bg-[#71eda7] text-black font-medium">
                                         Opened
@@ -126,7 +106,7 @@ export default function DetailActivity() {
                                         }}
                                         tagsStyles={{
                                             img: { padding: 0, margin: 10 },
-                                            p: { padding: 0, margin: 0 },
+                                            p: { padding: 0, margin: 5 },
                                         }}
                                         source={{
                                             html: assignment.intro.replace(
@@ -147,7 +127,7 @@ export default function DetailActivity() {
                                     key={file.filename}
                                     borderRadius={6}
                                     className=" m-2"
-                                    onPress={() => downloadFile(file)}
+                                    onPress={() => viewFile(file)}
                                 >
                                     <View className=" self-start py-1 px-3 border-[1px] border-primary-60 rounded-lg">
                                         <Text className=" w-fit text-primary-60">

@@ -22,17 +22,23 @@ import FolderIcon from '../../icons/folder';
 import ForumIcon from '../../icons/forum';
 import ResourceIcon from '../../icons/resource';
 import Chevron from './Chevron';
+import { CourseModuleEntity } from '../../gql/graphql';
+import { useDetailFolderRouter } from '../../stores/folder-detail.store';
+import UrlIcon from '../../icons/url';
+import LabelIcon from '../../icons/label';
 
 type Props = {
     value: {
         name: string;
         summary?: string;
         course_id: number;
-        contents: { id: number; modname: string; name: string }[];
+        contents: CourseModuleEntity[];
     };
 };
 
 const CourseContentAccordion = ({ value }: Props) => {
+    const { navigateFolder } = useDetailFolderRouter();
+
     const { width } = useWindowDimensions();
 
     const listRef = useAnimatedRef();
@@ -64,7 +70,7 @@ const CourseContentAccordion = ({ value }: Props) => {
                 }}
             >
                 <View className=" w-full p-4 flex-row justify-between items-center">
-                    <Text className=" flex-1 font-semibold text-lg mr-2">
+                    <Text className=" flex-1 font-semibold mr-2">
                         {value.name}
                     </Text>
                     {value.contents.length > 0 || value.summary ? (
@@ -84,45 +90,54 @@ const CourseContentAccordion = ({ value }: Props) => {
                             source={{ html: value.summary }}
                         />
                     </View>
-                    {value.contents.map(({ name, modname, id }, i) => {
-                        return (
-                            <TouchableNativeFeedback
-                                key={i}
-                                onPress={() => {
-                                    if (modname === 'assign') {
-                                        router.push({
-                                            pathname: '/modals/detail-activity',
-                                            params: {
-                                                id,
-                                                assignment_id: id,
-                                                course_id:
-                                                    value.course_id || '',
-                                            },
-                                        });
-                                    }
-                                }}
-                            >
-                                <View className=" w-full flex flex-row gap-4 items-center px-3 py-4 border-t-[0.2px] border-t-neutral-60">
-                                    {modname === 'resource' ? (
-                                        <ResourceIcon />
-                                    ) : modname === 'folder' ? (
-                                        <FolderIcon />
-                                    ) : modname === 'forum' ? (
-                                        <ForumIcon />
-                                    ) : modname === 'assign' ? (
-                                        <AssignIcon />
-                                    ) : (
-                                        <></>
-                                    )}
-                                    <View className="flex-1">
-                                        <Text className=" font-medium">
-                                            {name}
-                                        </Text>
+                    {value.contents.map(
+                        ({ courseContents, name, modname, id }, i) => {
+                            return (
+                                <TouchableNativeFeedback
+                                    key={i}
+                                    onPress={() => {
+                                        if (modname === 'assign') {
+                                            router.push({
+                                                pathname:
+                                                    '/modals/detail-activity',
+                                                params: {
+                                                    id,
+                                                    assignment_id: id,
+                                                    course_id:
+                                                        value.course_id || '',
+                                                },
+                                            });
+                                        } else {
+                                            navigateFolder(value.contents[i]);
+                                        }
+                                    }}
+                                >
+                                    <View className=" w-full flex flex-row gap-4 items-center px-3 py-4 border-t-[0.2px] border-t-neutral-60">
+                                        {modname === 'resource' ? (
+                                            <ResourceIcon />
+                                        ) : modname === 'folder' ? (
+                                            <FolderIcon />
+                                        ) : modname === 'forum' ? (
+                                            <ForumIcon />
+                                        ) : modname === 'url' ? (
+                                            <UrlIcon />
+                                        ) : modname === 'label' ? (
+                                            <LabelIcon />
+                                        ) : modname === 'assign' ? (
+                                            <AssignIcon />
+                                        ) : (
+                                            <></>
+                                        )}
+                                        <View className="flex-1">
+                                            <Text className=" font-medium">
+                                                {name}
+                                            </Text>
+                                        </View>
                                     </View>
-                                </View>
-                            </TouchableNativeFeedback>
-                        );
-                    })}
+                                </TouchableNativeFeedback>
+                            );
+                        },
+                    )}
                 </Animated.View>
             </Animated.View>
         </View>
