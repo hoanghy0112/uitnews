@@ -33,15 +33,14 @@ export class Section {
     @Column({ nullable: true })
     totalCredit: number;
 
-    @Field(() => String, { nullable: true })
-    @Column({ nullable: true })
-    title: string; //enum
-
     @ManyToMany('MajorSubject', 'sections', { cascade: true })
     @JoinTable()
     subjects: Relation<MajorSubject[]>;
 
     @ManyToOne('EducationProgram', 'sections')
-    @JoinColumn({ name: 'education_program_id' })
+    @JoinColumn([
+        { name: 'year_education', referencedColumnName: 'year' },
+        { name: 'major_education', referencedColumnName: 'majorName' },
+    ])
     educationProgram: Relation<EducationProgram>;
 }

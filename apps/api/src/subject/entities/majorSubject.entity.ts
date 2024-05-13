@@ -6,6 +6,7 @@ import {
     ManyToMany,
     ManyToOne,
     PrimaryColumn,
+    PrimaryGeneratedColumn,
     Relation,
 } from 'typeorm';
 import type { Section } from './section.entity';
@@ -14,12 +15,16 @@ import type { Section } from './section.entity';
 @Entity()
 export class MajorSubject {
     @Field(() => String)
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+
+    @Field(() => String)
+    @Column()
     code: string;
 
     @Field(() => Boolean, { nullable: true })
     @Column({ nullable: true })
-    isRequired: boolean;
+    isRequired: boolean = false;
 
     @Field(() => Boolean, { nullable: true })
     @Column({ nullable: true })
